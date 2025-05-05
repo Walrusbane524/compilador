@@ -1,0 +1,229 @@
+PARSER_BEGIN(MyParser)
+
+public class MyParser {
+    public static void main(String[] args) throws ParseException {
+        MyParser lexer = new MyParser(System.in);
+        Token token;
+        try {
+            // while ((token = lexer.getNextToken()).kind != 0) {
+            //    System.out.println(token.image);
+            //}
+            lexer.Program();
+        } catch (TokenMgrError e) {
+            System.err.println("Error analyzing input: " + e.getMessage());
+        }
+    }
+}
+
+PARSER_END(MyParser)
+
+TOKEN : {
+    < INT: "int" >
+    | < BOOLEAN: "boolean" >
+    | < IF: ("if") >
+    | < ELSE: ("else") >
+    | < WHILE: ("while") >
+    | < TRUE: ("true") >
+    | < FALSE: ("false") >
+    | < THIS: ("this") >
+    | < NEW: ("new") >
+    | < PLUS: ("+") >
+    | < MINUS: ("-") >
+    | < MULT: ("*") >
+    | < LOGIC_AND: ("&&") >
+    | < LOGIC_NOT: ("!") >
+    | < SMALLER: ("<") >
+    | < EQUAL: ("=") >
+    | < LENGTH: ("length") >
+    | < SYSTEM_OUT_PRINTLN: ("System.out.println") >
+    | < PUBLIC: ("public") >
+    | < STATIC: ("static") >
+    | < VOID: ("void") >
+    | < MAIN: ("main") >
+    | < STRING: ("String") >
+    | < CLASS: ("class") >
+    | < EXTENDS: ("extends") >
+    | < RETURN: ("return") >
+    | < IDENTIFIER: <LETTER> (<LETTER> | <DIGIT> | "_")*>
+    | < #LETTER: ["a"-"z", "A"-"Z"] >
+    | < #DIGIT: ["0"-"9"]>
+    | < INTEGER_LITERAL: (["0"-"9"])+ >
+}
+
+TOKEN: {
+    <DOT: ".">
+    | <COMMA: ",">
+    | <SCOLON: ";">
+    | <LPAR: "(">
+    | <RPAR: ")">
+    | <LBRACKET: "[">
+    | <RBRACKET: "]">
+    | <LBRACE: "{">
+    | <RBRACE: "}">
+}
+
+SKIP : {
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+    | <"//" (~["\n"])*>
+    | <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+}
+
+void Program():
+{}
+{
+    MainClass() (ClassDecl())*
+}
+
+void MainClass():
+{}
+{
+    <CLASS> <IDENTIFIER> <LBRACE> <PUBLIC> <STATIC> <VOID> <MAIN>
+    <LPAR> <STRING> <LBRACKET> <RBRACKET> <IDENTIFIER> <RPAR> <LBRACE>
+    Statement() <RBRACE> <RBRACE>
+}
+
+void ClassDecl():
+{}
+{
+    LOOKAHEAD(3)
+    <CLASS> <IDENTIFIER> <LBRACE> (VarDeclaration())* (MethodDeclaration())* <RBRACE>
+    | 
+    <CLASS> <IDENTIFIER> <EXTENDS> <IDENTIFIER> <LBRACE> (VarDeclaration())* (MethodDeclaration())* <RBRACE> 
+}
+
+void VarDeclaration():
+{}
+{
+    Type() <IDENTIFIER> <SCOLON>
+}
+
+void MethodDeclaration():
+{}
+{
+    <PUBLIC> Type() <IDENTIFIER> <LPAR> ArguentList() <RPAR> <LBRACE> (LOOKAHEAD(2) VarDeclaration())* (Statement())* <RETURN> Expression() <SCOLON> <RBRACE>
+}
+
+void ArguentList():
+{}
+{
+    Type() <IDENTIFIER> (ArguentRest())*
+    | Empty()
+}
+
+void ArguentRest():
+{}
+{
+    <COMMA> Type() <IDENTIFIER>
+}
+
+void Type():
+{}
+{
+
+    <BOOLEAN>
+    | <INT> (<LBRACKET> <RBRACKET>)?
+    | <IDENTIFIER>
+}
+
+void Statement():
+{}
+{
+    <LBRACE> (Statement())* <RBRACE>
+    | <IF> <LPAR> Expression() <RPAR> Statement() <ELSE> Statement()
+    | <WHILE> <LPAR>  Expression() <RPAR> Statement() 
+    | <SYSTEM_OUT_PRINTLN> <LPAR> Expression() <RPAR> <SCOLON>
+    | <IDENTIFIER> (
+        <EQUAL> Expression() <SCOLON>
+        | <LBRACKET> Expression() <RBRACKET> <EQUAL> Expression() <SCOLON>
+    )
+}
+
+void Smaller():
+{}
+{
+    LogicAnd() (LOOKAHEAD(2) <SMALLER> LogicAnd())*
+}
+
+void LogicAnd():
+{}
+{
+    Sum() (LOOKAHEAD(2) <LOGIC_AND> Sum())*
+}
+
+void Sum():
+{}
+{
+    Minus() (LOOKAHEAD(2) <PLUS> Minus())*
+}
+
+void Minus():
+{}
+{
+    Mult() (LOOKAHEAD(2) <MINUS> Mult())*
+}
+
+void Mult():
+{}
+{
+    Access() (LOOKAHEAD(2) <MULT> Access())*
+}
+
+void Access():
+{}
+{
+    Term() (
+        <LBRACKET> Smaller() <RBRACKET>
+        | <DOT> (
+            <IDENTIFIER> <LPAR> ExpressionList() <RPAR> 
+            | <LENGTH> 
+        )
+    )*
+}
+
+void Term():
+{}
+{
+    (<LOGIC_NOT>)* (Atomic() | <LPAR> Expression() <RPAR>)
+    | <NEW> (
+        <INT> <LBRACKET> Smaller() <RBRACKET> 
+        | <IDENTIFIER> <LPAR> <RPAR>
+      )
+}
+
+void Atomic():
+{}
+{
+    <IDENTIFIER>
+    | <TRUE>
+    | <FALSE>
+    | <THIS>
+    | <INTEGER_LITERAL>
+}
+
+void Expression():
+{}
+{
+    Smaller()
+}
+
+void Empty():
+{}
+{
+    {}
+}
+
+void ExpressionList():
+{}
+{
+    Expression() (ExpressionRest())*
+    | Empty()
+}
+
+void ExpressionRest():
+{}
+{
+    <COMMA> Expression()
+}
