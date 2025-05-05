@@ -1,0 +1,9 @@
+class Test{
+    public static void main(String[] a){
+        if (var1 < var2) {
+            lucas = 2;
+        } else {
+            jorge = 3;
+        }
+    }
+}
