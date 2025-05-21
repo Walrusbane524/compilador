@@ -11,7 +11,5 @@ public class Call extends Exp {
         this.i = i;
         this.el = el;
     }
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }

@@ -9,12 +9,22 @@ public class MyParser {
         try {
             MyParser parser = new MyParser(System.in);
             Program ast = parser.Program();
-            System.out.println("AST:");
-            System.out.println(ast.accept(new PrettyPrintVisitor()));
+            System.out.println("Built AST");
+
+            //System.out.println("AST:");
+            //System.out.println(ast.accept(new PrettyPrintVisitor()));
+
+            TypeTreeBuilder builder = new TypeTreeBuilder();
+            ast.accept(builder);
+            if (builder.error.anyErrors)
+                throw new Exception("Error building AST");
+            
         } catch (TokenMgrError e) {
             System.err.println("Error analyzing input: " + e.getMessage());
         } catch (ParseException e) {
             System.err.println("Parse error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
         }
     }
 }

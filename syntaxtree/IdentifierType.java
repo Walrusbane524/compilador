@@ -9,7 +9,5 @@ public class IdentifierType extends Type {
         this.s = s;
     }
 
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }
