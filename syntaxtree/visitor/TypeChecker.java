@@ -1,44 +1,6 @@
 package syntaxtree.visitor;
 
-import syntaxtree.And;
-import syntaxtree.ArrayAssign;
-import syntaxtree.ArrayLength;
-import syntaxtree.ArrayLookup;
-import syntaxtree.Assign;
-import syntaxtree.Block;
-import syntaxtree.BooleanType;
-import syntaxtree.Call;
-import syntaxtree.ClassDeclExtends;
-import syntaxtree.ClassDeclSimple;
-import syntaxtree.ClassType;
-import syntaxtree.ErrorMsg;
-import syntaxtree.False;
-import syntaxtree.Formal;
-import syntaxtree.Identifier;
-import syntaxtree.IdentifierExp;
-import syntaxtree.IdentifierType;
-import syntaxtree.If;
-import syntaxtree.IntArrayType;
-import syntaxtree.IntegerLiteral;
-import syntaxtree.IntegerType;
-import syntaxtree.LessThan;
-import syntaxtree.MainClass;
-import syntaxtree.MethodDecl;
-import syntaxtree.MethodType;
-import syntaxtree.Minus;
-import syntaxtree.NewArray;
-import syntaxtree.NewObject;
-import syntaxtree.Not;
-import syntaxtree.Plus;
-import syntaxtree.Print;
-import syntaxtree.Program;
-import syntaxtree.This;
-import syntaxtree.Times;
-import syntaxtree.True;
-import syntaxtree.Type;
-import syntaxtree.TypeTree;
-import syntaxtree.VarDecl;
-import syntaxtree.While;
+import syntaxtree.*;
 
 public class TypeChecker implements Visitor<Type>{
     public ErrorMsg error = new ErrorMsg();
@@ -89,6 +51,10 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     private boolean isDerived(Type t1, Type t2) {
+        System.out.println("is derived call");
+        System.out.println("t1: " + t1);
+        System.out.println("t2: " + t2);
+        System.out.println("equals: " + t1.equals(t2));
         if (t1 == null || t2 == null || t1.equals(t2)) return true;
 
         ClassType cSub = getClassType(t1);
@@ -115,6 +81,7 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     public Type visit(And n) {
+        System.out.println("And typecheck");
         Type e1Type = n.e1.accept(this);
         Type e2Type = n.e2.accept(this);
 
@@ -129,6 +96,7 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     public Type visit(LessThan n) {
+        System.out.println("LessThan typecheck");
         Type e1Type = n.e1.accept(this);
         Type e2Type = n.e2.accept(this);
 
@@ -144,6 +112,7 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     public Type visit(Plus n) {
+        System.out.println("Plus typecheck");
         Type e1Type = n.e1.accept(this);
         Type e2Type = n.e2.accept(this);
 
@@ -160,6 +129,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(Minus n) {
+        System.out.println("Minus typecheck");
         Type e1Type = n.e1.accept(this);
         Type e2Type = n.e2.accept(this);
 
@@ -176,6 +146,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(Times n) {
+        System.out.println("Times typecheck");
         Type e1Type = n.e1.accept(this);
         Type e2Type = n.e2.accept(this);
 
@@ -192,6 +163,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(ArrayLookup n) {
+        System.out.println("ArrayLookup typecheck");
         Type arrayType = n.e1.accept(this);
         Type indexType = n.e2.accept(this);
 
@@ -207,10 +179,11 @@ public class TypeChecker implements Visitor<Type>{
     }
 
 
-    public Type visit(Call n) {
-        Type objType = n.e.accept(this);
+    public Type visit(Call call) {
+        System.out.println("Method Call typecheck");
+        Type objType = call.e.accept(this);
         if (isPrimitive(objType)) {
-            error.complain("Object of method call must be a reference type, cannot call " + n.i.s + "()");
+            error.complain("Object of method call must be a reference type, cannot call " + call.i.s + "()");
             return null;
         }
 
@@ -220,21 +193,23 @@ public class TypeChecker implements Visitor<Type>{
             return null;
         }
 
-        MethodType methodType = getMethod(classType, n.i.s);
+        MethodType methodType = getMethod(classType, call.i.s);
         if (methodType == null)
-            error.complain("Method " + n.i.s + " not found in class " + classType.id);
+            error.complain("Method " + call.i.s + " not found in class " + classType.id);
 
-        if (methodType != null && methodType.args.size() != n.el.size())
-            error.complain("Method " + n.i.s + " called with wrong number of arguments");
+        if (methodType != null && methodType.args.size() != call.el.size())
+            error.complain("Method " + call.i.s + " called with wrong number of arguments");
 
         if (methodType != null) {
             for (int i = 0; i < methodType.args.size(); i++) {
-                Type paramType = n.el.get(i).accept(this);
+                Type paramType = call.el.get(i).accept(this);
+                System.out.println("paramtype: " + paramType);
                 Type expectedType = Type.type(methodType.args.get(i));
+                System.out.println("expectedtype: " + expectedType);
 
                 if (paramType == null) continue;
                 if (!isDerived(paramType, expectedType)) {
-                    error.complain("Incorrect parameter type at position " + (i + 1) + " in call to method " + n.i.s);
+                    error.complain("Incorrect parameter type at position " + (i + 1) + " in call to method " + call.i.s);
                 }
             }
             return methodType.getReturnType();
@@ -245,6 +220,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(ArrayLength n) {
+        System.out.println("ArrayLength typecheck");
         if (!(n.e.accept(this) instanceof IntArrayType))
             error.complain("Expression in ArrayLength must be of type int[]");
         return new IntegerType();
@@ -252,6 +228,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(Not n) {
+        System.out.println("Not typecheck");
         Type t = n.e.accept(this);
         if (t != null && !(t instanceof BooleanType))
             error.complain("Expression in Not must be of type boolean");
@@ -296,6 +273,7 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     public Type visit(If s) {
+        System.out.println("If typecheck");
         Type expType = s.e.accept(this);
         if (expType != null && !(expType instanceof BooleanType))
             error.complain("Condition in If statement must be of type boolean");
@@ -307,6 +285,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(While s) {
+        System.out.println("While typecheck");
         Type expType = s.e.accept(this);
         if (expType != null && !(expType instanceof BooleanType))
             error.complain("Condition in While statement must be of type boolean");
@@ -317,6 +296,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(Print s) {
+        System.out.println("Print typecheck");
         Type type = s.e.accept(this);
         if (type != null && !(type instanceof IntegerType))
             error.complain("Expression in Print statement must be of type int");
@@ -325,6 +305,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(Assign s) {
+        System.out.println("Assign typecheck");
         String idName = s.i.s;
         Type idType = getIdentifierType(currClass, idName);
         Type expType = s.e.accept(this);
@@ -338,6 +319,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(ArrayAssign s) {
+        System.out.println("ArrayAssign typecheck");
         String idName = s.i.s;
         Type idType = getIdentifierType(currClass, idName);
         if (idType != null && !(idType instanceof IntArrayType))
@@ -356,6 +338,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(ClassDeclSimple n) {
+        System.out.println("ClassDeclSimple typecheck");
         currClass = getClassType(Type.type(n.i.s));
         for (int i = 0; i < n.vl.size(); i++) {
             n.vl.get(i).accept(this);
@@ -368,6 +351,7 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     public Type visit(ClassDeclExtends n) {
+        System.out.println("ClassDeclExtends typecheck");
         currClass = getClassType(Type.type(n.i.s));
         for (int i = 0; i < n.vl.size(); i++) {
             n.vl.get(i).accept(this);
@@ -390,7 +374,7 @@ public class TypeChecker implements Visitor<Type>{
     }
 
     public Type visit(MethodDecl n) {
-
+        System.out.println("Method typecheck");
         currMethod = currClass.methods.get(n.i.s);
 
         for (int i = 0; i < n.fl.size(); i++) {
@@ -415,6 +399,7 @@ public class TypeChecker implements Visitor<Type>{
 
 
     public Type visit(Formal n) {
+        System.out.println("Formal typecheck");
         checkIfTypeExists(n.t);
         return null;
     }
@@ -425,6 +410,7 @@ public class TypeChecker implements Visitor<Type>{
     public Type visit(IdentifierType n) { return null; }
 
     public Type visit(Program p) {
+        System.out.println("Program typecheck");
         p.m.accept(this);
         for (int i = 0; i < p.cl.size(); i++) {
             p.cl.get(i).accept(this);

@@ -1,44 +1,6 @@
 package syntaxtree.visitor;
 
-import syntaxtree.And;
-import syntaxtree.ArrayAssign;
-import syntaxtree.ArrayLength;
-import syntaxtree.ArrayLookup;
-import syntaxtree.Assign;
-import syntaxtree.Block;
-import syntaxtree.BooleanType;
-import syntaxtree.Call;
-import syntaxtree.ClassDeclExtends;
-import syntaxtree.ClassDeclSimple;
-import syntaxtree.ClassType;
-import syntaxtree.ErrorMsg;
-import syntaxtree.False;
-import syntaxtree.Formal;
-import syntaxtree.Identifier;
-import syntaxtree.IdentifierExp;
-import syntaxtree.IdentifierType;
-import syntaxtree.If;
-import syntaxtree.IntArrayType;
-import syntaxtree.IntegerLiteral;
-import syntaxtree.IntegerType;
-import syntaxtree.LessThan;
-import syntaxtree.MainClass;
-import syntaxtree.MethodDecl;
-import syntaxtree.MethodType;
-import syntaxtree.Minus;
-import syntaxtree.NewArray;
-import syntaxtree.NewObject;
-import syntaxtree.Not;
-import syntaxtree.Plus;
-import syntaxtree.Print;
-import syntaxtree.Program;
-import syntaxtree.This;
-import syntaxtree.Times;
-import syntaxtree.True;
-import syntaxtree.Type;
-import syntaxtree.TypeTree;
-import syntaxtree.VarDecl;
-import syntaxtree.While;
+import syntaxtree.*;
 
 public class TypeTreeBuilder implements Visitor<Void> {
     public ClassType currClass = null;
@@ -73,6 +35,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
 
     public Void visit(ClassDeclSimple n) {
         String id = n.i.toString();
+        System.out.println("Defining class: " + id);
         currClass = new ClassType(id);
 
         for (int i = 0; i < n.vl.size(); i++)
@@ -89,6 +52,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
 
     public Void visit(ClassDeclExtends n) {
         String id = n.i.toString();
+        System.out.println("Defining class: " + id);
         String sc = n.j.toString();
         currClass = new ClassType(id, sc);
 
@@ -111,6 +75,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
     public Void visit(VarDecl n) {
         Type t = n.t;
         String id = n.i.toString();
+        System.out.println("Defining var: " + id);
 
         if (currMethod == null) {
             if (!currClass.addVar(id, t))
@@ -124,6 +89,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
     public Void visit(MethodDecl n) {
         String id = n.i.toString();
         Type rt = n.t;
+        System.out.println("Defining method: " + id);
 
         currMethod = new MethodType(id, rt);
 
@@ -132,8 +98,8 @@ public class TypeTreeBuilder implements Visitor<Void> {
 
         for (int i = 0; i < n.fl.size(); i++)
             n.fl.get(i).accept(this);
-        for (int i = 0; i < n.fl.size(); i++)
-            n.fl.get(i).accept(this);
+        for (int i = 0; i < n.vl.size(); i++)
+            n.vl.get(i).accept(this);
 
         currMethod = null;
         return null;
@@ -142,6 +108,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
     public Void visit(Formal n) {
         Type t = n.t;
         String id = n.i.toString();
+        System.out.println("Defining formal: " + id);
 
         if (!currMethod.addArg(id,t))
             error.complain("(formal)" + id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
@@ -154,6 +121,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
     public Void visit(IdentifierType n) { return null; }
 
     public Void visit(Program p) {
+        System.out.println("Defining program");
         p.m.accept(this);
         for (int i = 0; i < p.cl.size(); i++)
             p.cl.get(i).accept(this);

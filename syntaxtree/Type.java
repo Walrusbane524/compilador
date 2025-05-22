@@ -17,6 +17,10 @@ public abstract class Type {
             return new IdentifierType(s);
         }
     }
+
+    public boolean equals(Type other) {
+        return this.toString().equals(other.toString());
+    }
 }
 
 
