@@ -16,8 +16,16 @@ public class MyParser {
 
             TypeTreeBuilder builder = new TypeTreeBuilder();
             ast.accept(builder);
-            if (builder.error.anyErrors)
+            if (builder.error.anyErrors) {
                 throw new Exception("Error building AST");
+            }
+
+            TypeChecker typeChecker = new TypeChecker(builder.tree);
+            ast.accept(typeChecker);
+            if (typeChecker.error.anyErrors) {
+                throw new Exception("Semantic errors found");
+            }
+            System.out.println("No semantic errors");
             
         } catch (TokenMgrError e) {
             System.err.println("Error analyzing input: " + e.getMessage());
@@ -128,7 +136,7 @@ ClassDecl ClassDecl():
     { return new ClassDeclExtends(new Identifier(t1.image), new Identifier(t2.image), vl, ml); }
 }
 
-VarDecl VarDeclaration():
+VarDecl VarDeclaration(): 
 {
     Type t;
     Token id;

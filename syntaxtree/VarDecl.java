@@ -3,7 +3,7 @@ package syntaxtree;
 import syntaxtree.visitor.Visitor;
 
 public class VarDecl {
-    public Type t;
+    public Type t; 
     public Identifier i;
 
     public VarDecl(Type t, Identifier i) {

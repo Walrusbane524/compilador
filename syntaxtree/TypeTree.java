@@ -1,6 +1,6 @@
 package syntaxtree;
 
-class TypeTree{
+public class TypeTree{
     public SymbolTable<ClassType> classes = new SymbolTable<ClassType>();
 
     public boolean addClass(String id, ClassType t) {

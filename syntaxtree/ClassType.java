@@ -1,14 +1,14 @@
 package syntaxtree;
 
-class ClassType{
-    private String id;
-    private String superClass;
+public class ClassType{
+    public String id;
+    public String superClass;
     public SymbolTable<String> vars = new SymbolTable<String>();
     public SymbolTable<MethodType> methods = new SymbolTable<MethodType>();
 
-    ClassType(String i) { id = i; superClass = null; }
+    public ClassType(String i) { id = i; superClass = null; }
 
-    ClassType(String i, String sc) { id = i; superClass = sc; }
+    public ClassType(String i, String sc) { id = i; superClass = sc; }
 
     public String getId() { return id; }
     public String getSuperClass() { return superClass; }

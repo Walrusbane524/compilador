@@ -2,7 +2,7 @@ package syntaxtree;
 
 import java.util.ArrayList;
 
-class MethodType {
+public class MethodType {
     private String id;
     private Type returnType;
     public ArrayList<String> args = new ArrayList<String>();

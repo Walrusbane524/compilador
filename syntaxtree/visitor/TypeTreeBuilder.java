@@ -1,6 +1,44 @@
-package syntaxtree;
+package syntaxtree.visitor;
 
-import syntaxtree.visitor.Visitor;
+import syntaxtree.And;
+import syntaxtree.ArrayAssign;
+import syntaxtree.ArrayLength;
+import syntaxtree.ArrayLookup;
+import syntaxtree.Assign;
+import syntaxtree.Block;
+import syntaxtree.BooleanType;
+import syntaxtree.Call;
+import syntaxtree.ClassDeclExtends;
+import syntaxtree.ClassDeclSimple;
+import syntaxtree.ClassType;
+import syntaxtree.ErrorMsg;
+import syntaxtree.False;
+import syntaxtree.Formal;
+import syntaxtree.Identifier;
+import syntaxtree.IdentifierExp;
+import syntaxtree.IdentifierType;
+import syntaxtree.If;
+import syntaxtree.IntArrayType;
+import syntaxtree.IntegerLiteral;
+import syntaxtree.IntegerType;
+import syntaxtree.LessThan;
+import syntaxtree.MainClass;
+import syntaxtree.MethodDecl;
+import syntaxtree.MethodType;
+import syntaxtree.Minus;
+import syntaxtree.NewArray;
+import syntaxtree.NewObject;
+import syntaxtree.Not;
+import syntaxtree.Plus;
+import syntaxtree.Print;
+import syntaxtree.Program;
+import syntaxtree.This;
+import syntaxtree.Times;
+import syntaxtree.True;
+import syntaxtree.Type;
+import syntaxtree.TypeTree;
+import syntaxtree.VarDecl;
+import syntaxtree.While;
 
 public class TypeTreeBuilder implements Visitor<Void> {
     public ClassType currClass = null;
@@ -43,7 +81,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
             n.ml.get(i).accept(this);
 
         if (!tree.addClass(id, currClass))
-            error.complain(id + " is already defined");
+            error.complain("(classdeclsimple)" + id + " is already defined");
 
         currClass = null;
         return null;
@@ -60,7 +98,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
             n.ml.get(i).accept(this);
 
         if (!tree.addClass(id, currClass))
-            error.complain(id + " is already defined");
+            error.complain("(classdeclextends)" + id + " is already defined");
 
         currClass = null;
         return null;
@@ -76,10 +114,10 @@ public class TypeTreeBuilder implements Visitor<Void> {
 
         if (currMethod == null) {
             if (!currClass.addVar(id, t))
-                error.complain(id + " is already defined in " + currClass.getId());
+                error.complain("(methodnull) " + id + " is already defined in " + currClass.getId());
         }
         else if (!currMethod.addVar(id,t))
-            error.complain(id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
+            error.complain("(var)" + id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
         return null;
     }
 
@@ -90,7 +128,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
         currMethod = new MethodType(id, rt);
 
         if (!currClass.addMethod(id, currMethod))
-            error.complain(id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
+            error.complain("(methoddecl)" + id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
 
         for (int i = 0; i < n.fl.size(); i++)
             n.fl.get(i).accept(this);
@@ -106,7 +144,7 @@ public class TypeTreeBuilder implements Visitor<Void> {
         String id = n.i.toString();
 
         if (!currMethod.addArg(id,t))
-            error.complain(id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
+            error.complain("(formal)" + id + " is already defined in "  + currClass.getId() + "." + currMethod.getId());
         return null;
     }
 

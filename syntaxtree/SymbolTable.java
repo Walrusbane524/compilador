@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Map;
 
-class SymbolTable<V> {
+public class SymbolTable<V> {
     private Hashtable<Symbol, V> table = new Hashtable<Symbol, V>();
     private Stack<StackEntry<V>> stack = new Stack<StackEntry<V>>();
 
