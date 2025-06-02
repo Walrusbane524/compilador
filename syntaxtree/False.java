@@ -3,7 +3,5 @@ package syntaxtree;
 import syntaxtree.visitor.Visitor;
 
 public class False extends Exp {
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }

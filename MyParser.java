@@ -9,12 +9,30 @@ public class MyParser implements MyParserConstants {
         try {
             MyParser parser = new MyParser(System.in);
             Program ast = parser.Program();
-            System.out.println("AST:");
-            System.out.println(ast.accept(new PrettyPrintVisitor()));
+            System.out.println("Built AST");
+
+            //System.out.println("AST:");
+            //System.out.println(ast.accept(new PrettyPrintVisitor()));
+
+            TypeTreeBuilder builder = new TypeTreeBuilder();
+            ast.accept(builder);
+            if (builder.error.anyErrors) {
+                throw new Exception("Error building AST");
+            }
+
+            TypeChecker typeChecker = new TypeChecker(builder.tree);
+            ast.accept(typeChecker);
+            if (typeChecker.error.anyErrors) {
+                throw new Exception("Semantic errors found");
+            }
+            System.out.println("No semantic errors");
+
         } catch (TokenMgrError e) {
             System.err.println("Error analyzing input: " + e.getMessage());
         } catch (ParseException e) {
             System.err.println("Parse error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
@@ -716,6 +734,14 @@ l.add(e);
     finally { jj_save(5, xla); }
   }
 
+  static private boolean jj_3_1()
+ {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(LBRACE)) return true;
+    return false;
+  }
+
   static private boolean jj_3_6()
  {
     if (jj_scan_token(DOT)) return true;
@@ -730,14 +756,14 @@ l.add(e);
     return false;
   }
 
-  static private boolean jj_3R_VarDeclaration_127_5_16()
+  static private boolean jj_3R_VarDeclaration_145_5_16()
  {
-    if (jj_3R_Type_188_5_17()) return true;
+    if (jj_3R_Type_206_5_17()) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
-  static private boolean jj_3R_Type_191_7_19()
+  static private boolean jj_3R_Type_209_7_19()
  {
     if (jj_scan_token(IDENTIFIER)) return true;
     return false;
@@ -758,38 +784,30 @@ l.add(e);
 
   static private boolean jj_3_2()
  {
-    if (jj_3R_VarDeclaration_127_5_16()) return true;
+    if (jj_3R_VarDeclaration_145_5_16()) return true;
     return false;
   }
 
-  static private boolean jj_3R_Type_188_5_18()
+  static private boolean jj_3R_Type_206_5_18()
  {
     if (jj_scan_token(BOOLEAN)) return true;
     return false;
   }
 
-  static private boolean jj_3R_Type_188_5_17()
+  static private boolean jj_3R_Type_206_5_17()
  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_Type_188_5_18()) {
+    if (jj_3R_Type_206_5_18()) {
     jj_scanpos = xsp;
     if (jj_3_3()) {
     jj_scanpos = xsp;
     if (jj_3_4()) {
     jj_scanpos = xsp;
-    if (jj_3R_Type_191_7_19()) return true;
+    if (jj_3R_Type_209_7_19()) return true;
     }
     }
     }
-    return false;
-  }
-
-  static private boolean jj_3_1()
- {
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(LBRACE)) return true;
     return false;
   }
 

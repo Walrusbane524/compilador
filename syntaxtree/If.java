@@ -11,7 +11,5 @@ public class If extends Statement {
         this.s2 = s2;
     }
 
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }

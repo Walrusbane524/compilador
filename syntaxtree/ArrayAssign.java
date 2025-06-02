@@ -9,7 +9,5 @@ public class ArrayAssign extends Statement {
         this.e1 = e1;
         this.e2 = e2;
     }
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }

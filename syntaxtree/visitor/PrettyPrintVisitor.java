@@ -47,7 +47,7 @@ public class PrettyPrintVisitor implements Visitor<String> {
         sb.append("}\n");
         return sb.toString();
     }
-
+ 
     @Override
     public String visit(ClassDeclExtends n) {
         StringBuilder sb = new StringBuilder();

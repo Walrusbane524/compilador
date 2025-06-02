@@ -3,7 +3,7 @@ package syntaxtree;
 import syntaxtree.visitor.Visitor;
 
 public class VarDecl {
-    public Type t;
+    public Type t; 
     public Identifier i;
 
     public VarDecl(Type t, Identifier i) {
@@ -11,7 +11,5 @@ public class VarDecl {
         this.i = i;
     }
 
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }

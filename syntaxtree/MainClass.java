@@ -1,6 +1,5 @@
 package syntaxtree;
-
-import syntaxtree.visitor.Visitor;
+import syntaxtree.visitor.*;;
 
 public class MainClass {
     public Identifier i1, i2;
@@ -11,7 +10,5 @@ public class MainClass {
         this.i2 = i2;
         this.s = s;
     }
-    public String accept(Visitor<String> visitor){
-        return visitor.visit(this);
-    }
+    public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }
