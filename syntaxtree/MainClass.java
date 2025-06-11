@@ -1,5 +1,6 @@
 package syntaxtree;
-import syntaxtree.visitor.*;;
+
+import syntaxtree.visitor.Visitor;
 
 public class MainClass {
     public Identifier i1, i2;

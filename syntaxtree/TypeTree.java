@@ -1,5 +1,7 @@
 package syntaxtree;
 
+import Symbol.Symbol;
+
 public class TypeTree{
     public SymbolTable<ClassType> classes = new SymbolTable<ClassType>();
 

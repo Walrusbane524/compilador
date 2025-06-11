@@ -1,5 +1,6 @@
 package syntaxtree;
-import syntaxtree.visitor.*;
+
+import syntaxtree.visitor.Visitor;
 
 public class And extends Exp {
     public Exp e1, e2;

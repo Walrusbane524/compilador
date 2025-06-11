@@ -1,9 +1,18 @@
 PARSER_BEGIN(MyParser)
 
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
+
 import syntaxtree.*;
 import syntaxtree.visitor.*;
-import java.util.List;
-import java.util.ArrayList;
+import Frame.Frame;
+import Translate.IRTreeVisitor;
+import Translate.ProcFrag;
+import Tree.Stm;
+import Mips.MipsFrame;
+import Canon.*;
+
 public class MyParser {
     public static void main(String[] args) throws ParseException {
         try {
@@ -26,7 +35,36 @@ public class MyParser {
                 throw new Exception("Semantic errors found");
             }
             System.out.println("No semantic errors");
-            
+
+            Frame frame = new MipsFrame();
+            IRTreeVisitor treeVisitor = new IRTreeVisitor(frame, typeChecker);
+            ast.accept(treeVisitor);
+
+            LinkedList<ProcFrag> frags = treeVisitor.getResult();
+            List<TraceSchedule> traceList = new ArrayList<TraceSchedule>();
+            for (ProcFrag frag : frags) {
+
+                for (Stm stm : frag.body) {
+
+                    traceList.add(new TraceSchedule(new BasicBlocks(Canon.linearize(stm))));
+
+                }
+
+            }
+
+            System.out.println("Intermediate code generation completed successfully.");
+
+            // System.out.println("IR Tree:");
+            // Tree.Print irPrinter = new Tree.Print(System.out);
+            // for (TraceSchedule schedule : traceList) {
+            //     Tree.StmList current = schedule.stms;
+            //     while (current != null) {
+            //         irPrinter.prStm(current.head);
+            //         current = current.tail;
+            //     }
+            //     System.out.println();
+            // }
+
         } catch (TokenMgrError e) {
             System.err.println("Error analyzing input: " + e.getMessage());
         } catch (ParseException e) {

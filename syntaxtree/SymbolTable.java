@@ -4,6 +4,8 @@ import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Map;
 
+import Symbol.Symbol;
+
 public class SymbolTable<V> {
     private Hashtable<Symbol, V> table = new Hashtable<Symbol, V>();
     private Stack<StackEntry<V>> stack = new Stack<StackEntry<V>>();
@@ -39,6 +41,8 @@ public class SymbolTable<V> {
     public java.util.Enumeration keys() {
         return table.keys();
     }
+
+    public int size() { return table.size(); }
 
     public String toString() {
         String s = "(";
