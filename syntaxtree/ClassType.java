@@ -1,5 +1,7 @@
 package syntaxtree;
 
+import Symbol.Symbol;
+
 public class ClassType{
     public String id;
     public String superClass;

@@ -2,6 +2,8 @@ package syntaxtree;
 
 import java.util.ArrayList;
 
+import Symbol.Symbol;
+
 public class MethodType {
     private String id;
     private Type returnType;

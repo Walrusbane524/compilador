@@ -1,5 +1,7 @@
 package syntaxtree;
 
+import Symbol.Symbol;
+
 class StackEntry<V> {
     Symbol symbol;
     V oldVal;
